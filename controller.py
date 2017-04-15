@@ -9,7 +9,7 @@ screen = pygame.display.set_mode((1200, 800))
 pygame.display.set_caption("Election Data Viewer")
 pygame.display.update()
 
-data = model.get_data
+data = model.get_data()
 bc = view.BarChart(screen.get_rect(), values=data)
 
 # display loop
@@ -20,6 +20,4 @@ while not done:
 		if event.type == pygame.QUIT:
 			done = True
 	bc.draw(screen)
-	pygame.display.update()	
-
-
+	pygame.display.update()
