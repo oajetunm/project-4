@@ -6,22 +6,22 @@ import operator
 data_is_loaded = False
 
 def load_data():
-    dg ={}
-    gd = {}
+	dg ={}
+	gd = {}
 	# with open('US_County_Level_Presidential_Results_12-16.csv', 'r') as csvfile:
 	# 	reader = csv.DictReader(csvfile, delimiter=',')
 	# 	for row in reader:
 	# 		pass
-        #     if row['state_abbr'] in d:
-        #         d[row['state_abbr']].append(float(row['votes_dem_2016']))
-        #     else:
-        #         d[row['state_abbr']] = [float(row['votes_dem_2016'])]
-        #     d1 = dict((key, sum(vals)) for key, vals in d.items())
-        #     if row['state_abbr'] in g:
-        #         g[row['state_abbr']].append(float(row['votes_gop_2016']))
-        #     else:
-        #         g[row['state_abbr']] = [float(row['votes_gop_2016'])]
-        #     g1 = dict((key, sum(vals)) for key, vals in g.items())
+		#     if row['state_abbr'] in d:
+		#         d[row['state_abbr']].append(float(row['votes_dem_2016']))
+		#     else:
+		#         d[row['state_abbr']] = [float(row['votes_dem_2016'])]
+		#     d1 = dict((key, sum(vals)) for key, vals in d.items())
+		#     if row['state_abbr'] in g:
+		#         g[row['state_abbr']].append(float(row['votes_gop_2016']))
+		#     else:
+		#         g[row['state_abbr']] = [float(row['votes_gop_2016'])]
+		#     g1 = dict((key, sum(vals)) for key, vals in g.items())
 		#data_is_loaded = True
 
 def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
@@ -46,6 +46,9 @@ def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
 					g[row['state_abbr']].append(float(row['votes_gop_2016']))
 				else:
 					g[row['state_abbr']] = [float(row['votes_gop_2016'])]
+				g1 = dict((key, sum(vals)) for key, vals in g.items())
+				sorted_g1 = sorted(g1.items(), key=operator.itemgetter(1))
+				sorted_g2 = sorted(g1.items(), key=operator.itemgetter(1,0), reverse = True)
 
 			if row['state_abbr'] != 'AK':
 				if row['state_abbr'] in evry:
@@ -57,24 +60,42 @@ def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
 
 
 
-		if party == 'dem':
+
+		if party == 'gop':
 			if raw==True:
 				if sort_ascending ==True:
 					#dem1 = sorted_d1.items()
 
-					return sorted_d1
+					return sorted_g1
+
+		if party == 'gop':
+			if raw==True:
+				if sort_ascending ==False:
+					#dem1 = sorted_d1.items()
+
+					return sorted_g2
+
 		if party == 'gop':
 			if raw==False:
+
 				if sort_ascending ==True:
-					g1 = dict((key, sum(vals)) for key, vals in g.items())
-					sorted_g1 = sorted(g1.items(), key=operator.itemgetter(1))
+
 					order_g1 = sorted(g1.items(), key=operator.itemgetter(0))
 					vall = {k : v / evry1[k] for k, v in g1.items() if k in evry1}
 					sorted_vall = sorted(vall.items(), key=operator.itemgetter(1))
-				return sorted_vall
+					return sorted_vall
 						#value = g1[key] * evry[key]
 
 					#vald = sum(g1.values())
+		if party == 'gop':
+			if raw==False:
+
+				if sort_ascending ==False:
+
+					order_g1 = sorted(g1.items(), key=operator.itemgetter(0))
+					vall = {k : v / evry1[k] for k, v in g1.items() if k in evry1}
+					sorted_vall2 = sorted(vall.items(), key=operator.itemgetter(1,0), reverse = True)
+					return sorted_vall2
 
 
 
@@ -92,6 +113,28 @@ def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
 					sorted_d2 = sorted(d1.items(), key=operator.itemgetter(1,0), reverse=True)
 					return sorted_d2
 
+		if party == 'dem':
+			if raw==True:
+				if sort_ascending ==True:
+					#dem1 = sorted_d1.items()
+
+					return sorted_d1
+
+		if party == 'dem':
+			if raw==False:
+				if sort_ascending ==True:
+					dall = {k : v / evry1[k] for k, v in d1.items() if k in evry1}
+					sorted_dall = sorted(dall.items(), key=operator.itemgetter(1))
+					return sorted_dall
+
+		if party == 'dem':
+			if raw==False:
+				if sort_ascending ==False:
+					dall = {k : v / evry1[k] for k, v in d1.items() if k in evry1}
+					sorted_dall2 = sorted(dall.items(), key=operator.itemgetter(1,0), reverse=True)
+					return sorted_dall2
+
+
 
 
 
@@ -102,8 +145,10 @@ def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
 
 #print(get_data())
 
-def get_sorted_data():
-	return sorted(get_data(), key=lambda x : x[1], reverse=True)
+# def get_sorted_data():
+# 	return sorted(get_data(), key=lambda x : x[1], reverse=True)
+
+print (get_data())
 
 if __name__ == "__main__":
 

@@ -12,16 +12,18 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
+mv = 10000000
 
 
 class Button:
-
+	#chosen = True
 	def __init__(self, text, rect):
 		self.text = text
 		self.rect = rect
+		self.chosen = True
 
-	def draw(self, surface):
-		pygame.draw.rect(surface, GRAY, self.rect)
+	def draw(self, surface, color = GRAY):
+		pygame.draw.rect(surface, color, self.rect)
 
 		font = pygame.font.Font(None, 20)
 		label_view = font.render(self.text, False, BLACK)
@@ -39,47 +41,56 @@ class Button:
 				y <= self.rect.y + self.rect.height:
 
 				self.on_click(event)
-
+	#
 	def on_click(self, event):
-		print("button clicked")
+		self.chosen = True
 
-
+'''
 
 class DataChangeButton(Button):
+	def __init__(self, text, rect, chart):
+		Button.__init__(self, text, rectt)
+		self.chart = chart
+		self.sorted = False
+		# self.chosen = True
+	def on_click(self, event):
 
-    def __init__(self, text, rect, chart):
-        Button.__init__(self, text, rect)
-        self.chart = chart
-        self.sorted = False
+		if (self.sorted):
+			data = model.get_data()
+			self.sorted = False
+		else:
+			data = model.get_sorted_data()
+			self.sorted = True
+		self.chart.set_values(data)
+'''
 
-    def on_click(self, event):
-        # we will just toggle between sorted and unsorted data
-        if (self.sorted):
-            data = model.get_data()
-            self.sorted = False
-        else:
-            data = model.get_sorted_data()
-            self.sorted = True
-        self.chart.set_values(data)
-
+party='dem'
+raw=True
+sort_ascending=True
 
 pygame.init()
 
-screen = pygame.display.set_mode((900, 600))
+screen = pygame.display.set_mode((1200, 700))
 
 pygame.display.set_caption("Election Data Viewer")
 pygame.display.update()
 
-data = model.get_data()
 screen_rect = screen.get_rect()
-bc = view.BarChart(screen.get_rect(), values=data, ticks = 5)
 
-button = DataChangeButton("Ascending",pygame.Rect(10, screen_rect.height - 70, 150, 60),bc)
-button_1 = DataChangeButton("Descending",pygame.Rect(200, screen_rect.height - 70, 150, 60),bc)
-button_2 = DataChangeButton("DEM",pygame.Rect(400, screen_rect.height - 70, 150, 60),bc)
-button_2b = DataChangeButton("GOP",pygame.Rect(600, screen_rect.height - 70, 150, 60),bc)
-button_3 = DataChangeButton("Raw",pygame.Rect(800, screen_rect.height - 70, 150, 60),bc)
-button_4 = DataChangeButton("Percent",pygame.Rect(900, screen_rect.height - 70, 150, 60),bc)
+#data = model.get_data(party, raw , sort_ascending = sort_ascending)
+#screen_rect = screen.get_rect()
+# bc_rect =  pygame.Rect(screen_rect.x, screen_rect.y,
+# 	screen_rect.width, screen_rect.height)
+# bc = view.BarChart(bc_rect, plot_area_width_ratio =0.92 , plot_area_height_ratio =0.8,  values=data, ticks = 5, max_val = 10000000)
+
+button = Button("dem", pygame.Rect(750,120,100,50))
+button_gop = Button("gop", pygame.Rect(750,180,100,50))
+button_up = Button("up",pygame.Rect(750,230,100,50))
+button_down = Button("down", pygame.Rect(750,280,100,50))
+button_raw = Button("raw",pygame.Rect(750,340,100,50))
+button_percent = Button("%",pygame.Rect(750, 450,100,50))
+
+
 
 # display loop
 done = False
@@ -88,21 +99,77 @@ while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			done = True
+
 		else:
 			button.handle_event(event)
-			button_1.handle_event(event)
-			button_2.handle_event(event)
-			button_2b.handle_event(event)
-			button_3.handle_event(event)
-			button_4.handle_event(event)
+			if button.chosen == True:
+				b1c = view.RED
+				b2c = view.GRAY
+
+				party = "dem"
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = mv)
+				button_gop.chosen = False
+				#print("DEM Selected")
+
+			button_gop.handle_event(event)
+			if button_gop.chosen == True:
+				b2c = view.RED
+				b1c = view.GRAY
+				party = "gop"
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = mv)
+				button.chosen = False
+				#print("GOP Selected")
+			button_up.handle_event(event)
+			if button_up.chosen == True:
+				b3c = view.RED
+				b4c = view.GRAY
+				sort_ascending = True
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = mv)
+				button_down.chosen = False
+				#print("DEM Selected")
+
+			button_down.handle_event(event)
+			if button_down.chosen == True:
+				b4c = view.RED
+				b3c = view.GRAY
+				sort_ascending = False
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = mv)
+				button_up.chosen = False
+				#print("GOP Selected")
+			button_raw.handle_event(event)
+			if button_raw.chosen == True:
+				b5c = view.RED
+				b6c = view.GRAY
+				raw = True
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = mv)
+				button_percent.chosen = False
+				#print("DEM Selected")
+
+			button_percent.handle_event(event)
+			if button_percent.chosen == True:
+				b6c = view.RED
+				b5c = view.GRAY
+				raw = False
+				data = model.get_data(party =party, raw=raw, sort_ascending=sort_ascending)
+				bc = view.BarChart(pygame.Rect(50,50,1000,600), values=data, ticks = 5, max_val = 1.0)
+				button_raw.chosen = False
+
 
 	bc.draw(screen)
 
-	button.draw(screen)
-	button_1.draw(screen)
-	button_2.draw(screen)
-	button_2b.draw(screen)
-	button_3.draw(screen)
-	button_4.draw(screen)
+	button.draw(screen, b1c)
+	button_gop.draw(screen, b2c)
+	button_up.draw(screen, b3c)
+	button_down.draw(screen, b4c)
+	button_raw.draw(screen, b5c)
+	button_percent.draw(screen, b6c)
+
 
 	pygame.display.update()
+
+pygame.quit()

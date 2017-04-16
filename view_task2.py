@@ -122,7 +122,7 @@ class BarChart:
 		for i in range(self.ticks):
 		# for i in range(self.max_val):
 			font = pygame.font.Font(None, 16)
-			scale_label_view = font.render(str(float(i*(s_multiplier))), False, WHITE)
+			scale_label_view = font.render(str(round(i*(s_multiplier))), False, WHITE)
 			scale_label_pos = scale_label_view.get_rect()
 			scale_label_pos.y = self.scale_area.y + 10
 			scale_label_pos.x = self.scale_area.x + \
@@ -151,11 +151,6 @@ class BarChart:
 			b.draw(surface, self.plot_area.x, y_pos)
 
         # and update the BarChart.draw() method
-
-
-
-
-
 
 # a class to display a single horizontal bar in a pygame barchart
 class Bar:
