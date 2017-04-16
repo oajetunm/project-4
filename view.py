@@ -1,4 +1,5 @@
 import pygame
+import math
 
 
 BLACK = (0,0,0)
@@ -20,11 +21,13 @@ class BarChart:
 	def __init__(self, rect=pygame.Rect(0,0,600,400), values=[], ticks=10,
 		plot_area_width_ratio=0.8, plot_area_height_ratio=0.8, bar_color=GREEN,
 		max_val=0):
+		self.ticks = ticks
+		self.color = bar_color
 		self.rect = rect
 		self.background = BLACK
 		self.label_color = WHITE # constant ratios for portions of the display
-		self.label_area_width_ratio = 0.2
-		self.scale_area_height_ratio = 0.2
+		self.label_area_width_ratio = 0.1
+		self.scale_area_height_ratio = 0.1
 		self.plot_area_width_ratio = 1.0 - self.label_area_width_ratio
 		self.plot_area_height_ratio = 1.0 - self.scale_area_height_ratio
 		self.scale_area = pygame.Rect(
@@ -46,6 +49,10 @@ class BarChart:
                 rect.height * self.plot_area_height_ratio
                 )
 		self.set_values(values)
+
+
+
+
 	def set_values(self, values):
 		self.values = values
 		# figure out max value
@@ -55,6 +62,8 @@ class BarChart:
 				max_val = v[1]
 		self.max_val = max_val
 	def draw(self, surface):
+
+
 		#self.draw_bars(surface)
 		bar_num = 0
 		colors = [YELLOW, CYAN, MAGENTA, RED, BLUE, GREEN, WHITE]
@@ -66,6 +75,11 @@ class BarChart:
 			y_pos = self.plot_area.y + bar_num * b.height
 			bar_num += 1
 			b.draw(surface, self.plot_area.x, y_pos)
+			self.draw_bars(surface)
+			self.draw_labels(surface)
+			self.draw_scale(surface)
+
+
 
 	def get_bar_height(self):
 		return self.plot_area.height / len(self.values)
@@ -73,7 +87,7 @@ class BarChart:
 		bar_num = 0
 		for v in self.values:
 			label_text = v[0]
-			font = pygame.font.Font(None, 36)
+			font = pygame.font.Font(None, 16)
 			label_view = font.render(label_text, False, WHITE)
 			label_pos = label_view.get_rect()
 			label_pos.centery = self.rect.y + \
@@ -82,11 +96,23 @@ class BarChart:
 			label_pos.x = self.rect.x + 10
 			surface.blit(label_view, label_pos)
 			bar_num += 1
+
+
 	def draw_scale(self, surface):
-		scale_label_spacing = self.scale_area.width / self.max_val
-		for i in range(self.max_val):
-			font = pygame.font.Font(None, 36)
-			scale_label_view = font.render(str(i), False, WHITE)
+		scale_label_spacing = self.scale_area.width / (self.ticks - 1)
+		max_val1 = self.max_val
+		dig = len(str(max_val1))
+
+		if max_val1 <50:
+			rounded = float(math.ceil(max_val1))
+		else:
+			rounded = float(math.ceil(max_val1/ (10**(dig)))*(10**(dig)))
+
+		s_multiplier = rounded/(self.ticks - 1)
+		for i in range(self.ticks):
+		# for i in range(self.max_val):
+			font = pygame.font.Font(None, 16)
+			scale_label_view = font.render(str(round(i*(s_multiplier))), False, WHITE)
 			scale_label_pos = scale_label_view.get_rect()
 			scale_label_pos.y = self.scale_area.y + 10
 			scale_label_pos.x = self.scale_area.x + \
@@ -94,20 +120,24 @@ class BarChart:
 			surface.blit(scale_label_view, scale_label_pos)
 	def draw_bars(self, surface):
 		bar_num = 0
-		colors = [YELLOW, CYAN, MAGENTA, RED, BLUE, GREEN, WHITE]
+		#colors = [YELLOW, CYAN, MAGENTA, RED, BLUE, GREEN, WHITE]
+		if self.color != 'GREEN':
+			color = self.color
+		else:
+			self.color = 'GREEN'
 		for v in self.values:
 			bar_length = self.plot_area.width * v[1] / self.max_val
-			b = Bar(colors[bar_num % len(colors)],
+			b = Bar(color,
 				bar_length,
 				self.plot_area.height / len(self.values))
 			y_pos = self.plot_area.y + bar_num * b.height
 			bar_num += 1
 			b.draw(surface, self.plot_area.x, y_pos)
+
         # and update the BarChart.draw() method
-	def draw(self, surface):
-		self.draw_bars(surface)
-		self.draw_labels(surface)
-		#self.draw_scale(surface)
+
+
+
 
 
 

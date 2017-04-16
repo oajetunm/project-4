@@ -102,6 +102,9 @@ def get_data(party='dem', raw=True, sort_ascending=True, year=2016):
 
 #print(get_data())
 
+def get_sorted_data():
+	return sorted(get_data(), key=lambda x : x[1], reverse=True)
+
 if __name__ == "__main__":
 
 	points = 0
@@ -112,7 +115,7 @@ if __name__ == "__main__":
 		points += 3.33
 
 	data = get_data(party='gop', raw=False)
-	
+
 	if data [0][0] == 'DC' and int(data[0][1] * 100) == 4 and \
 		data[-1][0] == 'WY' and int(data[-1][1] * 100) == 70:
 		points += 3.33
